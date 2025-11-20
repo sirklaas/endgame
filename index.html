@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Endgame Presenter | Ranking Control</title>
+  <meta name="description" content="Presenter control interface for Endgame presentation system">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1>Endgame Presenter</h1>
+      <p class="subtitle">Control Interface - Click a card to select, use → arrow key to navigate</p>
+    </header>
+
+    <div id="cardsGrid" class="cards-grid">
+      <!-- Cards will be dynamically inserted here -->
+    </div>
+
+    <div class="instructions">
+      <div class="instruction-item">
+        <span>Click Card</span>
+        <span>Select & Show First Frame</span>
+      </div>
+      <div class="instruction-item">
+        <span class="key">→</span>
+        <span>Play Video</span>
+      </div>
+      <div class="instruction-item">
+        <span class="key">→</span>
+        <span>Return to Grid</span>
+      </div>
+      <div class="instruction-item">
+        <span class="key">R</span>
+        <span>Reset All</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Video Container -->
+  <div id="videoContainer" class="video-container">
+    <div class="video-wrapper">
+      <h2 id="videoTitle" class="video-title"></h2>
+      <video id="videoPlayer" class="video-player" playsinline></video>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    // Presenter-specific logic
+    const state = new EndgameState();
+    const cardsGrid = document.getElementById('cardsGrid');
+    const videoContainer = document.getElementById('videoContainer');
+    const videoPlayer = document.getElementById('videoPlayer');
+    const videoTitle = document.getElementById('videoTitle');
+    const videoController = new VideoController(videoPlayer, videoTitle);
+
+    // Render cards
+    function renderCards() {
+      cardsGrid.innerHTML = cards.map(card => `
+        <div class="card ${state.isCardUsed(card.id) ? 'used' : ''}" data-card-id="${card.id}">
+          <div class="card-content">
+            <img src="${card.image}" alt="${card.name}" class="card-image">
+            <div class="card-label">${card.name}</div>
+          </div>
+        </div>
+      `).join('');
+
+      // Attach click handlers
+      document.querySelectorAll('.card').forEach(cardElement => {
+        cardElement.addEventListener('click', () => {
+          const cardId = cardElement.dataset.cardId;
+          handleCardClick(cardId);
+        });
+      });
+    }
+
+    // Handle card selection
+    function handleCardClick(cardId) {
+      if (state.playbackState !== 'grid') return;
+      if (state.isCardUsed(cardId)) return;
+
+      const card = getCardById(cardId);
+      if (!card) return;
+
+      // Update state
+      if (state.selectCard(cardId)) {
+        // Show video container with first frame
+        videoContainer.classList.add('active');
+        videoController.loadCard(card);
+        updateUI();
+      }
+    }
+
+    // Handle keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        handleRightArrow();
+      } else if (e.key === 'r' || e.key === 'R') {
+        e.preventDefault();
+        handleReset();
+      }
+    });
+
+    function handleRightArrow() {
+      if (state.playbackState === 'paused') {
+        // Play video
+        state.playVideo();
+        videoController.play();
+      } else if (state.playbackState === 'playing') {
+        // Return to grid
+        state.returnToGrid();
+        videoContainer.classList.remove('active');
+        videoController.reset();
+        updateUI();
+      }
+    }
+
+    function handleReset() {
+      if (confirm('Reset all cards? This will clear all used cards.')) {
+        state.reset();
+        videoContainer.classList.remove('active');
+        videoController.reset();
+        updateUI();
+      }
+    }
+
+    // Update UI based on state
+    function updateUI() {
+      renderCards();
+      
+      // Update selected card highlighting
+      document.querySelectorAll('.card').forEach(cardElement => {
+        const cardId = cardElement.dataset.cardId;
+        updateCardVisuals(cardElement, cardId, state);
+      });
+    }
+
+    // Video ended - auto return to grid
+    videoPlayer.addEventListener('ended', () => {
+      if (state.playbackState === 'playing') {
+        state.returnToGrid();
+        videoContainer.classList.remove('active');
+        videoController.reset();
+        updateUI();
+      }
+    });
+
+    // Initial render
+    renderCards();
+
+    // Log for debugging
+    console.log('Presenter initialized. State:', state);
+    console.log('Open display.html in another window to see synchronized view');
+  </script>
+</body>
+</html>
