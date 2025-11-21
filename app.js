@@ -2,14 +2,14 @@
 
 // Card Configuration
 const cards = [
-  { id: 'bedrieglijk', name: 'Bedrieglijk', image: 'bedrieglijk.png', video: 'bedrieglijk.m4v' },
-  { id: 'beschermend', name: 'Beschermend', image: 'beschermend.png', video: null },
-  { id: 'creatief', name: 'Creatief', image: 'creatief.png', video: null },
-  { id: 'dapper', name: 'Dapper', image: 'dapper.png', video: null },
-  { id: 'doorzetter', name: 'Doorzetter', image: 'doorzetter.png', video: null },
-  { id: 'sinister', name: 'Sinister', image: 'sinister.png', video: null },
-  { id: 'vreugdevol', name: 'Vreugdevol', image: 'vreugdevol.png', video: null },
-  { id: 'wreed', name: 'Wreed', image: 'wreed.png', video: null }
+  { id: 'bedrieglijk', name: 'Bedrieglijk', image: 'bedrieglijk.webp', video: 'bedrieglijk.m4v' },
+  { id: 'beschermend', name: 'Beschermend', image: 'beschermend.webp', video: null },
+  { id: 'creatief', name: 'Creatief', image: 'creatief.webp', video: null },
+  { id: 'dapper', name: 'Dapper', image: 'dapper.webp', video: null },
+  { id: 'doorzetter', name: 'Doorzetter', image: 'doorzetter.webp', video: null },
+  { id: 'sinister', name: 'Sinister', image: 'sinister.webp', video: null },
+  { id: 'vreugdevol', name: 'Vreugdevol', image: 'vreugdevol.webp', video: null },
+  { id: 'wreed', name: 'Wreed', image: 'wreed.webp', video: null }
 ];
 
 // State Management
@@ -93,7 +93,7 @@ class VideoController {
 
   loadCard(card) {
     this.currentCard = card;
-    
+
     if (card.video) {
       // Has video - load and show first frame
       this.video.src = card.video;
@@ -105,7 +105,7 @@ class VideoController {
       this.video.style.display = 'none';
       this.video.poster = card.image;
     }
-    
+
     if (this.title) {
       this.title.textContent = card.name;
       this.title.classList.remove('hidden');
