@@ -64,28 +64,21 @@ h1 {
   flex-shrink: 0;
 }
 
-.header::after {
-  content: '';
-  position: absolute;
-  bottom: -0.5rem;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100px;
-  height: 3px;
-  background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
-  border-radius: 3px;
-}
+
 
 /* Cards Grid */
 .cards-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 1.5rem;
+  gap: 3rem;
+  /* Increased gap */
   flex-grow: 1;
   align-content: center;
   /* Center vertically if there's extra space */
   max-height: 80vh;
   /* Ensure it doesn't overflow */
+  padding-bottom: 3rem;
+  /* Added space below */
 }
 
 /* Card Styling */
